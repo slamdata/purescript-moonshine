@@ -1,0 +1,14 @@
+{
+  "name": "purescript-moonshine",
+  "ignore": [
+    "**/*.",
+    "node_modules",
+    "bower_components",
+    "output",
+    "test"
+  ],
+  "dependencies": {
+    "purescript-run": "^1.0.1",
+    "purescript-chalky": "^2.0.0"
+  }
+}
