@@ -2,20 +2,20 @@ module Moonshine.Log where
 
 import Prelude
 
-import Control.Monad.Eff.Console (CONSOLE, log)
+import Effect.Console (log)
 import Text.Chalky as TC
 import Run as R
 
-section ∷ ∀ r e. String → R.Run (eff ∷ R.EFF (console ∷ CONSOLE|e)|r) ~> R.Run (eff ∷ R.EFF (console ∷ CONSOLE|e)|r)
+section ∷ ∀ r. String → R.Run (effect ∷ R.EFFECT|r) ~> R.Run (effect ∷ R.EFFECT|r)
 section ann action = do
-  R.liftEff do
+  R.liftEffect do
     log ""
     log $ TC.magenta bar
     log $ TC.magenta ann
     log $ TC.magenta bar
     log ""
   result ← action
-  R.liftEff do
+  R.liftEffect do
     log ""
     log $ TC.magenta bar
     log $ TC.green $ "OK: " <> ann <> " passed"

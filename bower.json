@@ -8,7 +8,7 @@
     "test"
   ],
   "dependencies": {
-    "purescript-run": "^1.0.1",
-    "purescript-chalky": "^2.0.0"
+    "purescript-chalky": "^2.0.0",
+    "purescript-lunapark": "^0.2.0"
   }
 }

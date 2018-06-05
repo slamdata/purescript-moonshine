@@ -3,7 +3,7 @@ module Moonshine.Expect where
 import Prelude
 
 import CSS (fromString)
-import Data.Argonaut as J
+import Data.Argonaut.Decode.Class as J
 import Data.Array as A
 import Data.Either (Either(..))
 import Data.Newtype (un)

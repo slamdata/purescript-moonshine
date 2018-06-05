@@ -3,7 +3,9 @@ module Moonshine.Selector where
 import Prelude
 
 import CSS (fromString)
-import Data.Argonaut as J
+import Data.Argonaut.Core (Json, isNull) as J
+import Data.Argonaut.Decode.Class (decodeJson) as J
+import Data.Argonaut.Encode.Class (encodeJson) as J
 import Data.Array as A
 import Data.List as L
 import Data.Map as Map
@@ -42,19 +44,19 @@ liftSelector ∷ ∀ el r. SelectorF el ~> WithSelector el r
 liftSelector = R.lift _selector
 
 withLabel ∷ ∀ el r. String → WithSelector el r el
-withLabel txt = liftSelector $ WithLabel txt id
+withLabel txt = liftSelector $ WithLabel txt identity
 
 withTitle ∷ ∀ el r. String → WithSelector el r el
-withTitle txt = liftSelector $ WithTitle txt id
+withTitle txt = liftSelector $ WithTitle txt identity
 
 withText ∷ ∀ el r. String → WithSelector el r el
-withText txt = liftSelector $ WithText txt id
+withText txt = liftSelector $ WithText txt identity
 
 before ∷ ∀ el r. el → el → WithSelector el r el
-before el a = liftSelector $ Before el a id
+before el a = liftSelector $ Before el a identity
 
 after ∷ ∀ el r. el → el → WithSelector el r el
-after el a = liftSelector $ After el a id
+after el a = liftSelector $ After el a identity
 
 before_ ∷ ∀ el r. WithSelector el r el → WithSelector el r el → WithSelector el r el
 before_ a b = do
@@ -69,10 +71,10 @@ after_ a b = do
   after a' b'
 
 withProperties ∷ ∀ el r. el → Properties → WithSelector el r el
-withProperties el props = liftSelector $ WithProperties el props id
+withProperties el props = liftSelector $ WithProperties el props identity
 
 withAttributes ∷ ∀ el r. el → Attributes → WithSelector el r el
-withAttributes el attrs = liftSelector $ WithAttributes el attrs id
+withAttributes el attrs = liftSelector $ WithAttributes el attrs identity
 
 runSelector
   ∷ ∀ r
@@ -110,7 +112,7 @@ runSelector = R.interpretRec (R.on _selector handleSelector R.send)
        byPlaceholder = do
          els ← LP.findElements $ LT.ByXPath
            $ X.absDescendantOrSelf
-             (X.withPredicate  (X.named "input") (X.attr "placeholder" ==. txt))
+             (X.withPredicate  (X.named "input") (X.attr ( "placeholder") ==.  txt))
          mbEl ← A.foldM placeholderFoldFn Nothing els
          case mbEl of
            Nothing → RE.throw { error: LE.NoSuchElement, message: "There is no input with placeholder = " <> txt, stacktrace: "" }
@@ -122,19 +124,19 @@ runSelector = R.interpretRec (R.on _selector handleSelector R.send)
       let
         titled =
           X.absDescendantOrSelf
-            (X.withPredicate X.any (X.attr "title" ==. txt))
+            (X.withPredicate X.any (X.attr ( "title") ==. txt))
         ariaLabelled =
           X.absDescendantOrSelf
-            (X.withPredicate X.any (X.attr "aria-label" ==. txt))
+            (X.withPredicate X.any (X.attr ( "aria-label") ==. txt))
       in map cont $ LP.findElement $ LT.ByXPath $ titled |. ariaLabelled
     WithLabel txt cont →
       let
         titled =
           X.absDescendantOrSelf
-            (X.withPredicate X.any (X.attr "title" ==. txt))
+            (X.withPredicate X.any (X.attr ( "title") ==. txt))
         ariaLabelled =
           X.absDescendantOrSelf
-            (X.withPredicate X.any (X.attr "aria-label" ==. txt))
+            (X.withPredicate X.any (X.attr ( "aria-label") ==. txt))
       in map cont $ LP.findElement $ LT.ByXPath $ titled |. ariaLabelled
     Before el tested cont → do
       res ← isBefore el tested

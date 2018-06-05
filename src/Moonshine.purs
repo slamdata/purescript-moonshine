@@ -8,21 +8,21 @@ module Moonshine
 
 import Prelude
 
-import Control.Monad.Eff.Now as Now
 import Data.Either (Either)
 import Data.Traversable as T
-import Moonshine.Log as Log
-import Moonshine.Expect as Expect
-import Moonshine.Selector as Selector
-import Moonshine.Retry as Retry
+import Effect.Now as Now
 import Lunapark as L
 import Lunapark.Types as LT
+import Moonshine.Expect as Expect
+import Moonshine.Log as Log
+import Moonshine.Retry as Retry
+import Moonshine.Selector as Selector
 import Run as R
 import Run.Except as RE
 
 type RunMoonshine r eff = R.Run
-  ( aff ∷ R.AFF (L.LunaparkEffects (now ∷ Now.NOW|eff))
-  , eff ∷ R.EFF (L.LunaparkEffects (now ∷ Now.NOW|eff))
+  ( aff ∷ R.AFF
+  , effect ∷ R.EFFECT
   , lunapark ∷ L.LUNAPARK
   , lunaparkActions ∷ L.LUNAPARK_ACTIONS
   , expect ∷ Expect.EXPECT LT.Element
@@ -39,8 +39,8 @@ runMoonshine
   → Retry.RetryState L.Error
   → RunMoonshine r eff a
   → R.Run
-      ( aff ∷ R.AFF (L.LunaparkEffects (now ∷ Now.NOW|eff))
-      , eff ∷ R.EFF (L.LunaparkEffects (now ∷ Now.NOW|eff))|r)
+      ( aff ∷ R.AFF
+      , effect ∷ R.EFFECT |r)
       (Either L.Error Unit)
 runMoonshine uri caps state action = Retry.runCatch do
   eInterpret ← L.init uri caps
