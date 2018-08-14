@@ -9,6 +9,6 @@
   ],
   "dependencies": {
     "purescript-chalky": "^2.0.0",
-    "purescript-lunapark": "^0.3.0"
+    "purescript-lunapark": "^1.0.0"
   }
 }
