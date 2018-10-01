@@ -19,7 +19,7 @@ import Moonshine.Selector (Attributes, Properties, SELECTOR, SelectorF(..), With
 import Run as R
 import Run.Except as RE
 
-type RunMoonshine r eff = R.Run
+type RunMoonshine r = R.Run
   ( aff ∷ R.AFF
   , effect ∷ R.EFFECT
   , lunapark ∷ L.LUNAPARK
@@ -32,11 +32,11 @@ type RunMoonshine r eff = R.Run
   | r )
 
 runMoonshine
-  ∷ ∀ r eff a
+  ∷ ∀ r a
   . String
   → LT.CapabilitiesRequest
   → RetryState L.Error
-  → RunMoonshine r eff a
+  → RunMoonshine r a
   → R.Run
       ( aff ∷ R.AFF
       , effect ∷ R.EFFECT |r)
