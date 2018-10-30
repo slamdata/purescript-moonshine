@@ -13,8 +13,9 @@ import Data.Maybe (Maybe(..))
 import Data.Newtype (un)
 import Data.Symbol (SProxy(..))
 import Data.Tuple (Tuple(..))
-import Data.XPath.Builder ((==.), (|.))
+import Data.XPath.Builder ((==.), (|.), (</>))
 import Data.XPath.Builder as X
+import Data.XPath.Builder.Function as XF
 import Lunapark as LP
 import Lunapark.Error as LE
 import Lunapark.Types as LT
@@ -131,13 +132,19 @@ runSelector = R.interpretRec (R.on _selector handleSelector R.send)
       in map cont $ LP.findElement $ LT.ByXPath $ titled |. ariaLabelled
     WithLabel txt cont →
       let
-        titled =
+        labelled =
           X.absDescendantOrSelf
-            (X.withPredicate X.any (X.attr ( "title") ==. txt))
-        ariaLabelled =
+            ((X.withPredicate
+                (X.named "label")
+                (XF.startsWith X.text txt) </> X.any) :: X.Path)
+        labelledBy =
           X.absDescendantOrSelf
-            (X.withPredicate X.any (X.attr ( "aria-label") ==. txt))
-      in map cont $ LP.findElement $ LT.ByXPath $ titled |. ariaLabelled
+            (X.withPredicate
+              X.any
+              (X.withPredicate
+                (XF.id (X.attr "aria-labelledby"))
+                (X.text ==. txt)))
+      in map cont $ LP.findElement $ LT.ByXPath $ labelled |. labelledBy
     Before el tested cont → do
       res ← isBefore el tested
       if res then pure $ cont tested else RE.throw
